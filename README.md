@@ -1,90 +1,135 @@
-# meta-verse
-A metaverse project built with a test-first approach. Currently includes the test suite for backend API functionality.
+# Turborepo starter
 
-## Overview
+This Turborepo starter is maintained by the Turborepo core team.
 
-This project aims to create a full-featured metaverse platform. At this stage, we have:
-- **Test Suite**: Comprehensive tests for backend API using Jest and Axios
-- **Planned**: Backend server, frontend client, and real-time features
+## Using this example
 
-Technologies in use:
-- Jest for test framework
-- Axios for HTTP requests
-- WebSocket support for real-time communication
+Run the following command:
 
-## Project Structure
-
-```
-meta-verse/
-├── README.md              # This file
-├── tests/
-│   ├── index.test.js     # Main test suite
-│   └── package.json      # Test dependencies
+```sh
+npx create-turbo@latest
 ```
 
-## Features Tested
+## What's inside?
 
-### Authentication
-- User signup (with duplicate prevention)
-- User login with credential validation
-- Token generation and management
+This Turborepo includes the following packages/apps:
 
-### Backend Endpoints
+### Apps and Packages
 
-**HTTP REST API** (http://localhost:3000)
-- `/api/v1/signup` - User registration
-- `/api/v1/login` - User authentication
+- `docs`: a [Next.js](https://nextjs.org/) app
+- `web`: another [Next.js](https://nextjs.org/) app
+- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
+- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
+- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
 
-**WebSocket Server** (ws://localhost:3001)
-- Real-time communication support
+Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 
-## Prerequisites
+### Utilities
 
-- Node.js (v14 or higher)
-- npm or yarn
-- Running backend server on `http://localhost:3000`
-- Running WebSocket server on `ws://localhost:3001`
+This Turborepo has some additional tools already setup for you:
 
-## Installation
+- [TypeScript](https://www.typescriptlang.org/) for static type checking
+- [ESLint](https://eslint.org/) for code linting
+- [Prettier](https://prettier.io) for code formatting
 
-```bash
-cd tests
-npm install
+### Build
+
+To build all apps and packages, run the following command:
+
+```
+cd my-turborepo
+
+# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
+turbo build
+
+# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
+npx turbo build
+yarn dlx turbo build
+pnpm exec turbo build
 ```
 
-## Running Tests
+You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
 
-```bash
-cd tests
-npm test
+```
+# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
+turbo build --filter=docs
+
+# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
+npx turbo build --filter=docs
+yarn exec turbo build --filter=docs
+pnpm exec turbo build --filter=docs
 ```
 
-## Dependencies
+### Develop
 
-### Development
-- **jest** - Testing framework
+To develop all apps and packages, run the following command:
 
-### Production
-- **axios** - HTTP client for API requests
+```
+cd my-turborepo
 
-## Test Coverage
+# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
+turbo dev
 
-The test suite includes:
-- Signup validation (duplicate user prevention)
-- Login success scenarios
-- Login failure scenarios
-- WebSocket connectivity tests
+# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
+npx turbo dev
+yarn exec turbo dev
+pnpm exec turbo dev
+```
 
-## Contributing
+You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
 
-To add new tests, modify the test file at `tests/index.test.js` and run the test suite to ensure all tests pass.
+```
+# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
+turbo dev --filter=web
 
-## License
+# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
+npx turbo dev --filter=web
+yarn exec turbo dev --filter=web
+pnpm exec turbo dev --filter=web
+```
 
-ISC
+### Remote Caching
 
-## Notes
+> [!TIP]
+> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
 
-- Ensure the backend server is running before executing tests
-- WebSocket server must be accessible at the configured URL
-- All tests are asynchronous and use async/await pattern
+Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+
+By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+
+```
+cd my-turborepo
+
+# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
+turbo login
+
+# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
+npx turbo login
+yarn exec turbo login
+pnpm exec turbo login
+```
+
+This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+
+Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+
+```
+# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
+turbo link
+
+# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
+npx turbo link
+yarn exec turbo link
+pnpm exec turbo link
+```
+
+## Useful Links
+
+Learn more about the power of Turborepo:
+
+- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
+- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
+- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
+- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
+- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
+- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)

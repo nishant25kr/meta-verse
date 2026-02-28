@@ -708,6 +708,10 @@ describe("WebSocket tests",()=>{
     let ws2;
     let ws1Messages = []
     let ws2Messages = []
+    let adminX;
+    let adminY;
+    let userX;
+    let userY;  
 
     async function HttpSetup(){
         const username = "Nishant"+Math.random()
@@ -840,16 +844,103 @@ describe("WebSocket tests",()=>{
             ws2.onmessage = (message) => {
                 ws2Messages.push(JSON.parse(message.data))
             }
-
+        
         
     }
 
     beforeAll( async () => {
+        HttpSetup();
+        WebSocketSetup()
+    })
+
+    test("Get back ack for joining the space",()=>{
+
+
+        ws1.send(JSON.stringify({
+            "type":"join",
+            "payload":{
+                "spaceId":spaceId,
+                "token":adminToken
+            }
+        }))
+
+        ws2.send(JSON.stringify({
+            "type":"join",
+            "payload":{
+                "spaceId":spaceId,
+                "token":userToken
+            }
+        }))
+
+        const message1 = waitForAndPopLatestMessage(ws1Messages)
+        const message2 = waitForAndPopLatestMessage(ws2Messages)
+
+        expect(message1.type).toBe("space-joined")
+        expect(message2.type).toBe("space-joined")
+
+        expect(message1.payload.users.length + message1.payload.users.length).toBe(1)
+
+        adminX = message1.payload.spawn.x
+        adminY = message1.payload.spawn.y
+
+        userY = message2.payload.spawn.y
+        userY = message2.payload.spawn.y
+
+
         
+    })
+
+    test("User should not be able to move across the boundary",()=>{
+        ws1.send(JSON.stringify({
+            type:"movement",
+            payload:{
+                x:100000,
+                y:234000
+            }
+        }))
+
+        const message = waitForAndPopLatestMessage(ws1Messages)
+        expect(message.type).toBe("movement rejected")
 
     })
 
+    test("User should not be able to move across the boundary",()=>{
+        ws1.send(JSON.stringify({
+            type:"movement",
+            payload:{
+                x:adminX+2,
+                y:adminY+2
+            }
+        }))
 
+        const message = waitForAndPopLatestMessage(ws1Messages)
+        expect(message.type).toBe("movement rejected")
+        
+    })
+
+    test("Correct movement sould be brodcasted to the other user",()=>{
+        ws1.send(JSON.stringify({
+            type:"movement",
+            payload:{
+                x:adminX+1,
+                y:adminY+1,
+                userId:adminId
+            }
+        }))
+
+        const message = waitForAndPopLatestMessage(ws1Messages)
+        expect(message.type).toBe("movement")
+        
+    })
+
+    test("If a user leav the other user receive a leave message",()=>{
+        ws1.close()
+
+        const message = waitForAndPopLatestMessage(ws1Messages)
+        expect(message.type).toBe("user-left")
+        expect(message.payload.userId).toBe(AdminUserId)
+        
+    })
 
 })
 
