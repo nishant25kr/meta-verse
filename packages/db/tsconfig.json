@@ -1,23 +1,23 @@
 {
   // Visit https://aka.ms/tsconfig to read more about this file
-  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    // baseUrl needed for path mappings
-    "baseUrl": ".",
-    "paths": {
-      "@repo/db": ["../../packages/db/dist"],
-      "@repo/ui": ["../../packages/ui/src"]
-    },
+    // enable project references and incremental builds
+    "composite": true,
+    // File Layout - compile src/ to dist/ (not dist/src/)
+    "rootDir": "src",
+    "outDir": "dist",
 
-    // File Layout
-    "rootDir": "./src",
-    "outDir": "./dist",
-
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    // "ignoreDeprecations": "on",
+    
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "nodenext", 
-    "target": "esnext",
-    "types": [],
+    "module": "ESNext",
+    // "module": "nodenext",
+    // "target": "esnext",
+    "target": "ES2023",
+    "types": ["node"],
     // For nodejs:
     // "lib": ["esnext"],
     // "types": ["node"],
@@ -49,6 +49,5 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*"]
 }

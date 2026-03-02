@@ -36,3 +36,7 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+
+# Ignore JS output from TypeScript sources in workspace
+apps/*/src/**/*.js
+packages/*/src/**/*.js

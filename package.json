@@ -18,7 +18,10 @@
   },
   "packageManager": "npm@10.8.2",
   "workspaces": [
-    "packages/*",
-    "apps/*"
-  ]
+    "apps/*",
+    "packages/*"
+  ],
+  "dependencies": {
+    "zod": "^4.3.6"
+  }
 }

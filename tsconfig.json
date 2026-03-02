@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    /* Base settings shared across packages */
+    "baseUrl": ".",
+    "paths": {
+      "@repo/db": ["packages/db/src"],
+      "@repo/ui": ["packages/ui/src"],
+      "@repo/*": ["packages/*/src"]
+    }
+  }
+}
