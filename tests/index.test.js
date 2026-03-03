@@ -1,63 +1,100 @@
-import axios from "axios"
+import axios2 from "axios"
 
 const BACKEND_URL = "http://localhost:3000"
 const WS_BACKEND_URL = "ws://localhost:3001"
+
+const axios = {
+    post: async(...args)=>{
+        try{
+            const res = await axios2.post(...args)
+            return res;
+        }catch(e){
+            return e.response
+        }
+    },
+    get: async(...args)=>{
+        try{
+            const res = await axios2.get(...args)
+            return res;
+        }catch(e){
+            return e.response
+        }
+    },
+    put: async(...args)=>{
+        try{
+            const res = await axios2.put(...args)
+            return res;
+        }catch(e){
+            return e.response
+        }
+    },
+    delete: async(...args)=>{
+        try{
+            const res = await axios2.delete(...args)
+            return res;
+        }catch(e){
+            return e.response
+        }
+    },
+}
 
 describe("Authentication", () => {
 
     test("user is able to signup only once", async () => {
 
         const username = "nishant" + Math.random();
-        const password = "12345"
+        const password = "password123"
+        console.log("helllo from here")
         const res = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
             username,
-            password
+            password,
+            type: "user"
         })
         expect(res.status).toBe(200)
 
-        const Secondres = axios.post(`${BACKEND_URL}/api/v1/signup`, {
+        const Secondres = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
             username,
-            password
+            password,
+            type: "user"
         })
         expect(Secondres.status).toBe(400)
 
     })
 
     test("SignIn success if the username and password is correct", async () => {
-        const username = "Nishant" + Math.random()
-        const password = 12345
+        const username = "nishant" + Math.random()
+        const password = "password123"
         await axios.post(`${BACKEND_URL}/api/v1/signup`, {
             username,
-            password
+            password,
+            type: "user"
         })
 
-        const res = await axios.post(`${BACKEND_URL}/api/v1/login`, {
+        const res = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
             username,
             password
         })
 
         expect(res.status).toBe(200)
-        expect(res.body.token).toBeDescribe()
+        expect(res.data.token).toBeDefined()
 
     })
 
     test("SignIn fails if the username and password is incorrect", async () => {
-        const username = "Nishant" + Math.random()
-        const password = 12345
+        const username = "nishant" + Math.random()
+        const password = "password123"
         await axios.post(`${BACKEND_URL}/api/v1/signup`, {
             username,
-            password
+            password,
+            type: "user"
         })
 
-        const Newusername = "Nishant" + Math.random()
-        const Newpassword = 12345
-
-        const res = await axios.post(`${BACKEND_URL}/api/v1/login`, {
-            Newusername,
-            Newpassword
+        const res = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
+            username: "wronguser@example.com",
+            password: "wrongpassword123"
         })
 
-        expect(res.status).toBe(403)
+        expect(res.status).toBe(400)
     })
 })
 

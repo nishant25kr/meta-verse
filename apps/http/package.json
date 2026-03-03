@@ -4,7 +4,9 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "node dist/index.js"
+    "build": "tsc",
+    "dev": "node dist/index.js",
+    "dev:watch": "npx tsx src/index.ts"
   },
   "type": "module",
   "keywords": [],
@@ -22,6 +24,7 @@
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^25.3.3",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }

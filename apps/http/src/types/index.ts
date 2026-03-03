@@ -1,7 +1,17 @@
 import z from "zod";
 
+import "express";
+
+declare global {
+  namespace Express {
+    interface Request {
+      userId?: string;
+    }
+  }
+}
+
 export const SignUpSchema = z.object({
-username: z.string().email(),
+    username: z.string(),
     password: z.string().min(8),
     type: z.enum(["user","admin"])
 })
