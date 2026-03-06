@@ -6,6 +6,7 @@ import { router } from "./routes/v1/index.js"
 const app = express()
 app.use(express.json())
 app.use("/api/v1",router)
+
 app.get("/health",(req,res)=>{
     res.json({message:"server is up"})
 })

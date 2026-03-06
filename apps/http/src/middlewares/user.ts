@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken"
 import { JWT_PASSWORD } from "../config.js"
-import { NextFunction, Request, Response } from "express"
+import type { NextFunction, Request, Response } from "express"
 
 export const userMiddleware = (
     req: Request,
@@ -10,29 +10,29 @@ export const userMiddleware = (
     const header = req.headers.authorization
 
     if (!header || !header.startsWith("Bearer ")) {
-        return res.status(401).json({ message: "Token missing" })
+        return res.status(403).json({ message: "Token missing" })
     }
 
     const token = header.split(" ")[1] 
 
     if (!token) {
-  return res.status(401).json({ message: "Token malformed" });
+  return res.status(403).json({ message: "Token malformed" });
 }
 
     try {
         const decoded = jwt.verify(token, JWT_PASSWORD);
 
         if (typeof decoded === "string") {
-            return res.status(401).json({ message: "Invalid token" });
+            return res.status(403).json({ message: "Invalid token" });
         }
 
         if (!decoded.role || !decoded.userId) {
-            return res.status(401).json({ message: "Invalid payload" });
+            return res.status(403).json({ message: "Invalid payload" });
         }
 
         req.userId = decoded.userId;
         next()
     } catch (error) {
-        return res.status(401).json({ message: "Unauthorized" })
+        return res.status(403).json({ message: "Unauthorized" })
     }
 }

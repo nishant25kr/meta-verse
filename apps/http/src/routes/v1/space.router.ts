@@ -1,43 +1,45 @@
 import { Router } from "express";
-import { CreateSpaceSchema } from "src/types/index.js";
+import { CreateSpaceSchema } from "../../types/index.js";
 import client from "@repo/db"
 
 export const spaceRouter = Router()
 
-spaceRouter.post("/", async (req, res) => {
-    const parsedData = CreateSpaceSchema.safeParse(req.body)
+// spaceRouter.post("/", async (req, res) => {
+//     const parsedData = CreateSpaceSchema.safeParse(req.body)
 
-    if (!parsedData) {
-        return res.status(400).json({
-            message: "Validation failed"
-        })
-    }
+//     if (!parsedData.success) {
+//         return res.status(400).json({
+//             message: "Invalid input"
+//         });
+//     }
 
-    try {
-        const space = await client.space.create({
-            data: {
-                name: parsedData.data?.name,
-                dimensions: parsedData.data?.dimensions,
-                mapId: parsedData.data?.mapId
-            }
-        })
+//     try {
 
-        if (!space) {
-            return res.status(400).json({
-                message: "Error while saving space"
-            })
-        }
+//         const space = await client.space.create({
+//             data: {
+//                 name: parsedData.data.name,
+//                 width: parsedData.data.width,
+//                 height: parsedData.data.height,
+//                 mapId: parsedData.data.mapId
+//             }
+//         })
 
-        return res.status(200).json({
-            spaceId: space.id
-        })
-    } catch (error) {
-        return res.status(400).json({
-            message: error
-        })
-    }
+//         if (!space) {
+//             return res.status(400).json({
+//                 message: "Error while saving space"
+//             })
+//         }
 
-})
+//         return res.status(200).json({
+//             spaceId: space.id
+//         })
+//     } catch (error) {
+//         return res.status(400).json({
+//             message: error
+//         })
+//     }
+
+// })
 
 spaceRouter.delete("/:spaceId", async (req, res) => {
     const spaceId = req.params.spaceId

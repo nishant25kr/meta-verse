@@ -2,7 +2,7 @@ import { Router } from "express";
 import { adminRouter } from "./admin.router.js";
 import { userRouter } from "./user.router.js";
 import { spaceRouter } from "./space.router.js";
-import { SignInSchema, SignUpSchema } from "../../types/index.js";
+import { CreateAvatarSchema, SignInSchema, SignUpSchema } from "../../types/index.js";
 import client from "@repo/db"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
@@ -14,7 +14,6 @@ router.post("/signup", async (req, res) => {
     const parsedData = SignUpSchema.safeParse(req.body)
 
     if (!parsedData.success) {
-        console.log("Validation failed:", parsedData.error)
         return res.status(400).json({ message: "validation failed" })
     }
 
@@ -32,7 +31,6 @@ router.post("/signup", async (req, res) => {
             userId: user.id
         })
     } catch (error) {
-        console.log("Signup error:", error)
         return res.status(400).json({ message: "user already exists" })
     }
 })
@@ -83,10 +81,8 @@ router.post("/elements", (req, res) => {
     
 })
 
-router.post("/avatars", (req, res) => {
 
-})
 
+router.use("/admin", adminRouter)
+// router.use("/space", spaceRouter)
 router.use("/user", userRouter)
-router.use("/user", spaceRouter)
-router.use("/user", adminRouter)

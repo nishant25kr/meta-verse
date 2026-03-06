@@ -1,31 +1,51 @@
 import { Router } from "express";
-import { UpdateMetadataSchema } from "src/types/index.js";
+import { UpdateMetadataSchema } from "../../types/index.js";
 import client from "@repo/db"
-import { userMiddleware } from "src/middlewares/user.js";
+import { userMiddleware } from "../../middlewares/user.js";
 
 export const userRouter = Router()
 
 userRouter.post("/metadata", userMiddleware, async (req, res) => {
     const parsedData = UpdateMetadataSchema.safeParse(req.body)
-
+    console.log("data of avatar to update", parsedData.data)
     if (!parsedData.success) {
         return res.status(400).json({ message: "Validation failed" })
     }
 
     if (!req.userId) {
-        return res.status(401).json({ message: "Unauthorized" })
+        return res.status(400).json({ message: "Unauthorized" })
     }
 
-    await client.user.update({
-        where: {
-            username: req.userId
-        },
-        data: {
-            avatarId: parsedData.data.avatarId
-        }
-    })
+    try {
+        const avatar = await client.avatar.findUnique({
+            where:{
+                id: parsedData.data.avatarId
+            }
+        })
+        console.log("avatar:",avatar)
+        console.log("user",req.userId)
 
-    res.json({ message: "Metadata Updated" })
+        if(!avatar){
+            return res.status(400).json({
+                message: "avatar not available"
+            })
+        }
+
+        await client.user.update({
+            where: {
+                username: req.userId
+            },
+            data: {
+                avatarId: parsedData.data.avatarId
+            }
+        })
+
+        return res.status(200).json({ message: "Metadata Updated" })
+    } catch (error) {
+        return res.status(400).json({
+            message: "Invalid avatar id"
+        });
+    }
 })
 
 userRouter.post("/metadata/bulk", async (req, res) => {
