@@ -7,7 +7,6 @@ export const userRouter = Router()
 
 userRouter.post("/metadata", userMiddleware, async (req, res) => {
     const parsedData = UpdateMetadataSchema.safeParse(req.body)
-    console.log("data of avatar to update", parsedData.data)
     if (!parsedData.success) {
         return res.status(400).json({ message: "Validation failed" })
     }
@@ -22,8 +21,6 @@ userRouter.post("/metadata", userMiddleware, async (req, res) => {
                 id: parsedData.data.avatarId
             }
         })
-        console.log("avatar:",avatar)
-        console.log("user",req.userId)
 
         if(!avatar){
             return res.status(400).json({
@@ -33,7 +30,7 @@ userRouter.post("/metadata", userMiddleware, async (req, res) => {
 
         await client.user.update({
             where: {
-                username: req.userId
+                id: req.userId
             },
             data: {
                 avatarId: parsedData.data.avatarId
@@ -48,18 +45,32 @@ userRouter.post("/metadata", userMiddleware, async (req, res) => {
     }
 })
 
-userRouter.post("/metadata/bulk", async (req, res) => {
+userRouter.get("/metadata/bulk",userMiddleware, async (req, res) => {
+
     const userIdString = (req.query.ids ?? "[]") as string
 
     let userIds: string[] = []
 
+    if (!userIdString) {
+        return res.status(400).json({
+            message: "ids query param required"
+        });
+    }
+
+    console.log(userIdString)
+
     try {
         userIds = JSON.parse(userIdString)
+        console.log(typeof userIds, userIds)
+        console.log(userIds[0])
+        console.log("length",userIds.length)
     } catch {
+        console.log("Invalid ids format")
         return res.status(400).json({ message: "Invalid ids format" })
     }
 
-    if (!Array.isArray(userIds) || userIds.length === 0) {
+    if (!Array.isArray(userIds) || userIds.length == 0 ) {
+        console.log("No user ids provided" )
         return res.status(400).json({ message: "No user ids provided" })
     }
 
@@ -75,10 +86,13 @@ userRouter.post("/metadata/bulk", async (req, res) => {
         }
     })
 
-    res.json({
+    console.log(metadata)
+
+    return res.status(200).json({
         avatars: metadata.map(m => ({
             userId: m.id,
             avatarId: m.avatar?.imageUrl
         }))
     })
+
 })

@@ -4,42 +4,42 @@ import client from "@repo/db"
 
 export const spaceRouter = Router()
 
-// spaceRouter.post("/", async (req, res) => {
-//     const parsedData = CreateSpaceSchema.safeParse(req.body)
+spaceRouter.post("/", async (req, res) => {
+    const parsedData = CreateSpaceSchema.safeParse(req.body)
+    console.log(parsedData.data)
+    if (!parsedData.success) {
+        return res.status(400).json({
+            message: "Invalid input"
+        });
+    }
 
-//     if (!parsedData.success) {
-//         return res.status(400).json({
-//             message: "Invalid input"
-//         });
-//     }
+    try {
 
-//     try {
+        const space = await client.space.create({
+            data: {
+                name: parsedData.data.name,
+                width: parsedData.data.width,
+                height: parsedData.data.height,
+                mapId: parsedData.data.mapId
+            }
+        })
 
-//         const space = await client.space.create({
-//             data: {
-//                 name: parsedData.data.name,
-//                 width: parsedData.data.width,
-//                 height: parsedData.data.height,
-//                 mapId: parsedData.data.mapId
-//             }
-//         })
+        if (!space) {
+            return res.status(400).json({
+                message: "Error while saving space"
+            })
+        }
 
-//         if (!space) {
-//             return res.status(400).json({
-//                 message: "Error while saving space"
-//             })
-//         }
+        return res.status(200).json({
+            spaceId: space.id
+        })
+    } catch (error) {
+        return res.status(400).json({
+            message: error
+        })
+    }
 
-//         return res.status(200).json({
-//             spaceId: space.id
-//         })
-//     } catch (error) {
-//         return res.status(400).json({
-//             message: error
-//         })
-//     }
-
-// })
+})
 
 spaceRouter.delete("/:spaceId", async (req, res) => {
     const spaceId = req.params.spaceId

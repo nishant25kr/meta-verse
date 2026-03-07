@@ -1,25 +1,83 @@
 import { Router } from "express";
 import { adminMiddleware } from "../../middlewares/admin.js";
-import { CreateAvatarSchema } from "../../types/index.js";
+import { AddElementSchema, CreateAvatarSchema, CreateMapSchema, UpdateElementSchema } from "../../types/index.js";
 import client from "@repo/db"
 
 export const adminRouter = Router()
-console.log("Admin router loaded")
 
-// adminRouter.post("/element",(req,res)=>{
+adminRouter.post("/element", adminMiddleware, async (req, res) => {
+    const parsedData = AddElementSchema.safeParse(req.body)
+    if (!parsedData.success) {
+        return res.status(400).json({
+            message: "Validation failed"
+        })
+    }
 
-// })
+    try {
 
-// adminRouter.put("/element/:elementId",(req,res)=>{
+        const elementRes = await client.element.create({
+            data: {
+                imageUrl: parsedData.data.imageUrl,
+                width: parsedData.data.width,
+                height: parsedData.data.height,
+                static: true
 
-// })
+            }
+        })
+
+        if (!elementRes) {
+            return res.status(400).json({
+                message: " error while uploadin elment"
+            })
+        }
+
+        return res.status(200).json({
+            id: elementRes.id
+        })
+
+    } catch (error) {
+
+        return res.status(400).json({
+            message: error
+        })
+
+    }
+
+})
+
+adminRouter.put("/element", adminMiddleware, async(req, res) => {
+    const id = req.params.elementId
+
+    if(!id){
+        return res.status(400).json({
+            message:"Invalid id"
+        })
+    }
+
+    const parsedData = UpdateElementSchema.safeParse(req.body);
+    if(!parsedData.success){
+        return res.status(400).json({
+            message:"Validation failed"
+        })
+    }
+
+    try {
+        await client.element.findUnique({
+            where:{
+                id: parsedData.data.imageUrl
+            }
+        })
+    } catch (error) {
+        
+    }
+
+})
 
 adminRouter.post("/avatar", adminMiddleware, async (req, res) => {
 
     const parsedData = CreateAvatarSchema.safeParse(req.body)
 
     if (!parsedData.success) {
-        console.log("validation failed")
         return res.status(400).json({
             message: "Validation fialed"
         })
@@ -45,6 +103,71 @@ adminRouter.post("/avatar", adminMiddleware, async (req, res) => {
     }
 })
 
-// adminRouter.get("/map",(req,res)=>{
+adminRouter.get("/avatar", adminMiddleware, async (req, res) => {
 
-// })
+    try {
+
+        const avatars = await client.avatar.findMany()
+
+        if (!avatars) {
+            return res.status(400).json({
+                message: "Error while fething data"
+            })
+        }
+
+        return res.status(200).json({
+            avatars: avatars.map(a => ({
+                "id": a.id,
+                "imageUrl": a.imageUrl
+            }))
+        })
+
+    } catch (error) {
+        return res.status(400).json({
+            message: error
+        })
+    }
+})
+
+adminRouter.post("/map", adminMiddleware, async (req, res) => {
+    const parsedData = CreateMapSchema.safeParse(req.body);
+
+    if(!parsedData.success){
+        return res.status(400).json({
+            message:"Validation failed"
+        })
+    }
+
+    try {
+        const map = await client.map.create({
+            data:{
+                thumbnail: parsedData.data.thumbnail,
+                width: parsedData.data.width,
+                height: parsedData.data.height,
+                name: parsedData.data.name
+            }
+        })
+
+        await client.mapElements.create({
+            data:{
+                mapId: map.id,
+                elementId: parsedData.data.defaultElements[0].elementId,
+                x: parsedData.data.defaultElements[0].x,
+                y: parsedData.data.defaultElements[0].y,
+            }
+        })
+
+        return res.status(200).json({
+            id: map.id
+        })
+
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({
+            message: "Error creating map"
+        })
+    }
+})
+
+
+

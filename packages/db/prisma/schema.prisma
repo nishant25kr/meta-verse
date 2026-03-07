@@ -26,8 +26,8 @@ model User {
 model Space {
   id        String  @id @unique @default(cuid())
   name      String
-  width     Int
-  height    Int
+  width     String
+  height    String
   thumbnail String?
   creatorId String
   creator     User    @relation(fields: [creatorId], references: [id])
