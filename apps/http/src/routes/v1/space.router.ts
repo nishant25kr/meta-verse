@@ -1,12 +1,15 @@
 import { Router } from "express";
-import { CreateSpaceSchema } from "../../types/index.js";
+import { CreateSpaceSchema, DeleteSpaceSchema } from "../../types/index.js";
 import client from "@repo/db"
+import { userMiddleware } from "../../middlewares/user.js";
 
 export const spaceRouter = Router()
 
-spaceRouter.post("/", async (req, res) => {
+spaceRouter.post("/", userMiddleware, async (req, res) => {
+
     const parsedData = CreateSpaceSchema.safeParse(req.body)
-    console.log(parsedData.data)
+
+
     if (!parsedData.success) {
         return res.status(400).json({
             message: "Invalid input"
@@ -15,12 +18,18 @@ spaceRouter.post("/", async (req, res) => {
 
     try {
 
+        if (!req.userId) {
+            return res.status(400).json({
+                message: "Not autho"
+            })
+        }
+
         const space = await client.space.create({
             data: {
                 name: parsedData.data.name,
-                width: parsedData.data.width,
-                height: parsedData.data.height,
-                mapId: parsedData.data.mapId
+                width: Number(parsedData.data.width),
+                height: Number(parsedData.data.height),
+                creatorId: req.userId
             }
         })
 
@@ -41,31 +50,56 @@ spaceRouter.post("/", async (req, res) => {
 
 })
 
-spaceRouter.delete("/:spaceId", async (req, res) => {
-    const spaceId = req.params.spaceId
-
-    if (!spaceId) {
-        return res.status(400).json({
-            message: "invalid input"
-        })
-    }
-
+spaceRouter.delete("/:spaceId", userMiddleware, async (req, res) => {
     try {
-        await client.space.delete({
+
+        const parsedData = DeleteSpaceSchema.safeParse(req.params)
+        if (!parsedData.success) {
+
+            return res.status(400).json({
+                message: "Validation failed"
+            })
+        }
+
+        const spaceId = parsedData.data.spaceId;
+
+
+        
+
+        const space = await client.space.findUnique({
+            where:{
+                id:spaceId
+            }
+        })
+        if(!space){
+            return res.status(400).json({
+                message:'Space not found'
+            })
+        }
+
+        if(!(space?.creatorId === req.userId)){
+            return res.status(400).json({
+                message:"unautho user"
+            })
+        }
+
+        const deleteSpace = await client.space.delete({
             where: {
                 id: spaceId
             }
-        })
+        });
 
-        return res.status(200)
+        return res.status(200).json({
+            message: "Deleted successfully",
+            space: deleteSpace
+        });
 
-    } catch (error) {
-        return res.status(400).json({
-            message: error
-        })
+    } catch (error: any) {
+        return res.status(500).json({
+            message: "Something went wrong"
+        });
     }
-
-})
+});
 
 spaceRouter.get("/:spaceId", async (req, res) => {
     const spaceId = req.params.spaceId as string;

@@ -8,7 +8,6 @@ export const userMiddleware = (
     next: NextFunction
 ) => {
     const header = req.headers.authorization
-
     if (!header || !header.startsWith("Bearer ")) {
         return res.status(403).json({ message: "Token missing" })
     }
@@ -16,7 +15,7 @@ export const userMiddleware = (
     const token = header.split(" ")[1] 
 
     if (!token) {
-  return res.status(403).json({ message: "Token malformed" });
+    return res.status(403).json({ message: "Token malformed" });
 }
 
     try {

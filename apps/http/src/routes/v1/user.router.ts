@@ -57,20 +57,14 @@ userRouter.get("/metadata/bulk",userMiddleware, async (req, res) => {
         });
     }
 
-    console.log(userIdString)
-
     try {
         userIds = JSON.parse(userIdString)
-        console.log(typeof userIds, userIds)
-        console.log(userIds[0])
-        console.log("length",userIds.length)
+    
     } catch {
-        console.log("Invalid ids format")
         return res.status(400).json({ message: "Invalid ids format" })
     }
 
     if (!Array.isArray(userIds) || userIds.length == 0 ) {
-        console.log("No user ids provided" )
         return res.status(400).json({ message: "No user ids provided" })
     }
 
@@ -85,8 +79,6 @@ userRouter.get("/metadata/bulk",userMiddleware, async (req, res) => {
             avatar: true
         }
     })
-
-    console.log(metadata)
 
     return res.status(200).json({
         avatars: metadata.map(m => ({
