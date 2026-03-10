@@ -45,30 +45,30 @@ adminRouter.post("/element", adminMiddleware, async (req, res) => {
 
 })
 
-adminRouter.put("/element", adminMiddleware, async(req, res) => {
+adminRouter.put("/element", adminMiddleware, async (req, res) => {
     const id = req.params.elementId
 
-    if(!id){
+    if (!id) {
         return res.status(400).json({
-            message:"Invalid id"
+            message: "Invalid id"
         })
     }
 
     const parsedData = UpdateElementSchema.safeParse(req.body);
-    if(!parsedData.success){
+    if (!parsedData.success) {
         return res.status(400).json({
-            message:"Validation failed"
+            message: "Validation failed"
         })
     }
 
     try {
         await client.element.findUnique({
-            where:{
+            where: {
                 id: parsedData.data.imageUrl
             }
         })
     } catch (error) {
-        
+
     }
 
 })
@@ -131,41 +131,32 @@ adminRouter.get("/avatar", adminMiddleware, async (req, res) => {
 
 adminRouter.post("/map", adminMiddleware, async (req, res) => {
     const parsedData = CreateMapSchema.safeParse(req.body);
-
-    if(!parsedData.success){
+    if (!parsedData.success) {
         return res.status(400).json({
-            message:"Validation failed"
+            message: "Validation failed"
         })
     }
-
-    try {
-        const map = await client.map.create({
-            data:{
-                thumbnail: parsedData.data.thumbnail,
-                width: parsedData.data.width,
-                height: parsedData.data.height,
-                name: parsedData.data.name
-            }
-        })
-
+    const map = await client.map.create({
+        data: {
+            thumbnail: parsedData.data.thumbnail,
+            width: parsedData.data.width,
+            height: parsedData.data.height,
+            name: parsedData.data.name
+        }
+    })
+    for (let i = 0; i < parsedData.data.defaultElements.length; i++) {
         await client.mapElements.create({
-            data:{
+            data: {
                 mapId: map.id,
-                elementId: parsedData.data.defaultElements[0].elementId,
-                x: parsedData.data.defaultElements[0].x,
-                y: parsedData.data.defaultElements[0].y,
+                elementId: parsedData.data.defaultElements[i].elementId,
+                x: parsedData.data.defaultElements[i].x,
+                y: parsedData.data.defaultElements[i].y,
             }
         })
-
-        return res.status(200).json({
-            id: map.id
-        })
-
-    } catch (error) {
-        return res.status(400).json({
-            message: "Error creating map"
-        })
     }
+    return res.status(200).json({
+        id: map.id
+    })
 })
 
 

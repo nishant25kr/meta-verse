@@ -68,12 +68,11 @@ export const CreateMapSchema = z.object({
     name:z.string()
 })
 
+export const DeleteElementSchema = z.object({
+    spaceId : z.string(),
+    elementId : z.string()
+})
+
 export const DeleteSpaceSchema = z.object({
   spaceId: z.string()
 })
-
-
-
-
-
-
