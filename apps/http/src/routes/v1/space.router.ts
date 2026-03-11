@@ -72,46 +72,51 @@ spaceRouter.post("/", userMiddleware, async (req, res) => {
 
 
 })
+
 spaceRouter.delete("/element", userMiddleware, async (req, res) => {
+    try {
 
-    const parsedData = DeleteElementSchema.safeParse(req.body)
+        const parsedData = DeleteElementSchema.safeParse(req.body)
+        console.log("parsedData", parsedData)
 
-    if (!parsedData.success) {
-        return res.status(400).json({
-            message: "Validation failed"
-        })
-    }
-
-    const deleteSpace = await client.space.findUnique({
-        where: {
-            id: parsedData.data.spaceId
+        if (!parsedData.success) {
+            return res.status(400).json({
+                message: "Validation failed"
+            })
         }
-    })
-    console.log(deleteSpace)
 
-    if (!deleteSpace) {
-        return res.status(400).json({
-            message: "Space not found"
+        const deleteSpace = await client.space.findUnique({
+            where: {
+                id: parsedData.data.spaceId
+            }
         })
-    }
+        console.log(deleteSpace)
 
-    const deleteElement = await client.spaceElements.deleteMany({
-        where: {
-            spaceId: parsedData.data.spaceId,
-            elementId: parsedData.data.elementId
+        if (!deleteSpace) {
+            return res.status(400).json({
+                message: "Space not found"
+            })
         }
-    })
-        
-    if (!deleteElement) {
-        return res.status(400).json({
-            message: "Space not found"
+
+        const deleteElement = await client.element.findUnique({
+            where: {
+                id: parsedData.data.elementId
+            }
         })
+
+        console.log("deleteElement:", deleteElement)
+
+        res.status(200).json({
+            message: "delete success"
+        })
+    } catch (error: any) {
+        if (error.code === 'P2025') {
+            console.log('element not found or could not be deleted.');
+        } else {
+            console.error('An error occurred:', error);
+        }
+
     }
-
-
-    res.status(200).json({
-        message: "delete success"
-    })
 })
 
 spaceRouter.delete("/:spaceId", userMiddleware, async (req, res) => {

@@ -8,7 +8,6 @@ export const userMiddleware = (
     next: NextFunction
 ) => {
     const header = req.headers.authorization
-    console.log("header",header)
     if (!header || !header.startsWith("Bearer ")) {
         return res.status(403).json({ message: "Token missing" })
     }
