@@ -3,17 +3,17 @@ import z from "zod";
 import "express";
 
 declare global {
-  namespace Express {
-    interface Request {
-      userId?: string;
+    namespace Express {
+        interface Request {
+            userId?: string;
+        }
     }
-  }
 }
 
 export const SignUpSchema = z.object({
     username: z.string(),
     password: z.string().min(8),
-    type: z.enum(["user","admin"])
+    type: z.enum(["user", "admin"])
 })
 
 export const SignInSchema = z.object({
@@ -26,10 +26,10 @@ export const UpdateMetadataSchema = z.object({
 })
 
 export const CreateSpaceSchema = z.object({
-        name:z.string(),
-        width: z.string().regex(/^[0-9]{1,4}$/),
-        height: z.string().regex(/^[0-9]{1,4}$/),
-        mapId: z.string() || null,
+    name: z.string(),
+    width: z.string().regex(/^[0-9]{1,4}$/),
+    height: z.string().regex(/^[0-9]{1,4}$/),
+    mapId: z.string() || null,
 
 })
 
@@ -38,6 +38,13 @@ export const AddElementSchema = z.object({
     static: z.boolean(),
     width: z.number(),
     height: z.number(),
+})
+
+export const AddSpaceElement = z.object({
+    elementId: z.string(),
+    spaceId: z.string(),
+    x: z.number(),
+    y: z.number()
 })
 
 export const CreateElementSchema = z.object({
@@ -57,7 +64,7 @@ export const CreateAvatarSchema = z.object({
 })
 
 export const CreateMapSchema = z.object({
-    thumbnail:z.string(),
+    thumbnail: z.string(),
     width: z.number(),
     height: z.number(),
     defaultElements: z.array(z.object({
@@ -65,14 +72,14 @@ export const CreateMapSchema = z.object({
         x: z.number(),
         y: z.number()
     })),
-    name:z.string()
+    name: z.string()
 })
 
 export const DeleteElementSchema = z.object({
-    spaceId : z.string(),
-    elementId : z.string()
+    spaceId: z.string(),
+    elementId: z.string()
 })
 
 export const DeleteSpaceSchema = z.object({
-  spaceId: z.string()
+    spaceId: z.string()
 })
